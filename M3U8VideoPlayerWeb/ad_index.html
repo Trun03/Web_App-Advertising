@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player with Ads</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background-color: #34495e;
+            padding: 10px 0;
+        }
+        nav button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #2980b9;
+        }
+        nav .spacer {
+            flex-grow: 1; 
+        }
+
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .box {
+            background-color: #c0392b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        #vid {
+            flex: 1;
+            margin: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 640px;
+            height: 360px;
+            margin-top: 20px;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .video-url {
+            width: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .play-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .play-button:hover {
+            background-color: #0056b3;
+        }
+        .ad-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .skip-button {
+            display: none;
+            position: absolute;
+            bottom: 20px; 
+            right: 20px; 
+            z-index: 999;
+            padding: 10px 15px;
+            background-color: rgb(64, 62, 62);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .skip-button:hover {
+            background-color: #c82333;
+        }
+
+        .mute-button {
+            background-color: rgb(64, 62, 62);
+            position: absolute;
+            bottom: 20px; 
+            right: 100px; 
+            z-index: 999;
+            padding: 10px 15px;
+            background-color: rgb(64, 62, 62);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 42px;
+            height: 40px;
+            display: none;
+        }
+
+        #mute-icon {
+            height: 20px;
+            width: 20px;
+            left: 10px;
+        }
+
+    .pause-play-button {
+        display: none;
+        background-color: rgb(64, 62, 62);
+        position: absolute;
+        bottom: 20px; 
+        right: 570px; 
+        z-index: 999;
+        padding: 10px 15px;
+        background-color: rgb(64, 62, 62);
+        color: #fff;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+        width: 42px;
+        height: 40px;
+    }
+
+    #pause-play-icon {
+        height: 20px;
+        width: 20px;
+    }
+
+        .ad-overlay-2 {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px; 
+            height: 150px; 
+            z-index: 10;
+        }
+
+        ins {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin-left: 141px;
+        }
+        .ad-overlay-3 {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px; 
+            height: 150px; 
+            z-index: 10;
+        }
+
+        ins {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin-left: 141px;
+        }
+        #links {
+            display: flex;
+            flex-direction: column;
+            height: 49vh;
+            width: 52vw;
+            margin-top: 80px;
+            padding: 50px;
+        }
+
+        .link-item {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 50px;
+        }
+
+        .link-item input {
+            width: 80%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .copy-button {
+            padding: 8px 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <button onclick="location.href='http://adweb.ami.vn/'">Banner</button>
+        <button onclick="location.href='http://csai.ami.vn/'">CSAI</button>
+        <button onclick="location.href='https://ssai.ami.vn/'">SSAI</button>
+        <div class="spacer">
+    </nav>
+
+    <div class="container">
+        <div id="vid">
+
+            <h1>HLS Video Player with Ads</h1>
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url" value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS .m3u8">
+                <button class="play-button" id="play-button">Play Video</button>
+            </div>
+            <div class="video-container">
+                <video id="video" controls></video>
+                <div class="ad-overlay" id="ad-overlay">Loading Ad...</div>
+                <button class="skip-button" id="skip-button">Skip Ad</button>
+                <button class="mute-button" id="mute-button">
+                    <img id="mute-icon" src="https://img.icons8.com/ios-filled/50/000000/mute.png" alt="Mute">
+                </button>
+                <button class="pause-play-button" id="pause-play-button">
+                    <img id="pause-play-icon" src="https://img.icons8.com/ios-filled/50/000000/play.png" alt="Play">
+                </button>
+            </div>
+            
+
+            <h1>Shaka Player HLS Video Player For Photos and Gif</h1>
+            <!-- vid2 -->
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url-2"  value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS tại đây">
+                <button class="play-button" id="play-button-2">Play Ad 2</button>
+            </div>
+            <div class="video-container">
+                <video id="video-2" controls></video>
+                <div class="ad-overlay-2">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="42" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+                </div>
+            </div>
+
+            <!-- vid3 -->
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url-3"  value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS tại đây">
+                <button class="play-button" id="play-button-3">Play Ad 3</button>
+            </div>
+            <div class="video-container">
+                <video id="video-3" controls></video>
+                <div class="ad-overlay-3">
+                    <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                    <ins data-revive-zoneid="57" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                    <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="links">
+            <h1>HLS links</h1>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/antv.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/antv.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/quochoi.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/quochoi.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/quocte.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/quocte.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://vz-cea98c59-23c.b-cdn.net/c309129c-27b6-4e43-8254-62a15c77c5ee/playlist.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://vz-cea98c59-23c.b-cdn.net/c309129c-27b6-4e43-8254-62a15c77c5ee/playlist.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8')">Copy</button>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+<!-- Copy Link -->
+<script>
+    function copyToClipboard(link) {
+        const tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = link;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        alert('Link đã được sao chép: ' + link);
+    }
+</script>
+
+<!-- vid 1 -->
+<script>
+    document.getElementById('play-button').addEventListener('click', async function() {
+        const video = document.getElementById('video');
+        const videoUrl = document.getElementById('video-url').value;
+        const adOverlay = document.getElementById('ad-overlay');
+        const skipButton = document.getElementById('skip-button');
+        const muteButton = document.getElementById('mute-button');
+        const muteIcon = document.getElementById('mute-icon');
+        const pausePlayButton = document.getElementById('pause-play-button');
+        const pausePlayIcon = document.getElementById('pause-play-icon');
+
+        let adsManager; // Biến lưu trữ đối tượng adsManager
+        let isAdPaused = false; // Cờ theo dõi trạng thái quảng cáo bị tạm dừng
+
+        // Ẩn nút mute và pause/play ban đầu
+        muteButton.style.display = 'none';
+        pausePlayButton.style.display = 'none';
+
+        if (!videoUrl.endsWith('.m3u8')) {
+            console.error('Vui lòng nhập một URL hợp lệ có đuôi .m3u8');
+            return;
+        }
+
+        // Khởi tạo Google IMA
+        const adDisplayContainer = new google.ima.AdDisplayContainer(adOverlay, video);
+        adDisplayContainer.initialize();
+        const adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+        const adsRequest = new google.ima.AdsRequest();
+        adsRequest.adTagUrl = 'http://adserver.ami.vn/www/delivery/fc.php?script=apVideo:vast2&zoneid=18'; 
+
+        adsLoader.requestAds(adsRequest);
+
+        adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(event) {
+            adsManager = event.getAdsManager(video); // Sử dụng biến đã khai báo
+            adOverlay.style.display = 'flex';
+            skipButton.style.display = 'none'; // Ẩn nút bỏ qua khi quảng cáo đang phát
+            muteButton.style.display = 'block'; // Hiển thị nút mute khi quảng cáo phát
+            pausePlayButton.style.display = 'block'; 
+
+            adsManager.init(640, 360, google.ima.ViewMode.NORMAL);
+            adsManager.setVolume(0); // Tắt âm thanh quảng cáo
+            adsManager.start();
+
+            adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, function() {
+                adOverlay.style.display = 'none';
+                skipButton.style.display = 'none';
+                muteButton.style.display = 'none'; 
+                pausePlayButton.style.display = 'none';
+
+                loadHLSVideo(videoUrl);
+            });
+
+            // Hiển thị nút bỏ qua sau 10 giây
+            setTimeout(() => {
+                skipButton.style.display = 'block';
+            }, 10000);
+
+            skipButton.addEventListener('click', function() {
+                adsManager.stop();
+                adOverlay.style.display = 'none';
+                skipButton.style.display = 'none';
+                muteButton.style.display = 'none'; // Ẩn nút mute khi bỏ qua quảng cáo
+                pausePlayButton.style.display = 'none';
+                loadHLSVideo(videoUrl);
+            });
+
+            muteButton.addEventListener('click', function() {
+                const currentVolume = adsManager.getVolume();
+                if (currentVolume === 0) {
+                    adsManager.setVolume(1); // Bật âm thanh
+                    muteIcon.src = "https://img.icons8.com/ios-filled/50/000000/speaker.png"; // Đổi icon thành loa
+                } else {
+                    adsManager.setVolume(0); // Tắt âm thanh
+                    muteIcon.src = "https://img.icons8.com/ios-filled/50/000000/mute.png"; // Đổi icon thành tắt âm thanh
+                }
+            });
+        });
+
+        adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, function(event) {
+            console.error('Lỗi quảng cáo:', event.getError());
+            adOverlay.style.display = 'none';
+            loadHLSVideo(videoUrl); // Phát video nếu có lỗi quảng cáo
+        });
+
+        pausePlayButton.addEventListener('click', function() {
+            if (adsManager) { // Kiểm tra xem adsManager đã được khởi tạo chưa
+                if (isAdPaused) {
+                    adsManager.resume();  // Tiếp tục phát quảng cáo nếu bị tạm dừng
+                    pausePlayIcon.src = "https://img.icons8.com/ios-filled/50/000000/pause.png"; // Đổi icon về Pause
+                    isAdPaused = false;  // Cập nhật trạng thái không còn tạm dừng
+                } else {
+                    adsManager.pause();  // Tạm dừng quảng cáo
+                    pausePlayIcon.src = "https://img.icons8.com/ios-filled/50/000000/play.png";  // Đổi icon về Play
+                    isAdPaused = true;   // Cập nhật trạng thái quảng cáo bị tạm dừng
+                }
+            }
+        });
+
+        function loadHLSVideo(url) {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);  // Load URL m3u8
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Đối với Safari (HLS được hỗ trợ natively trong Safari)
+                video.src = url;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play();
+                });
+            } else {
+                console.error('HLS không được hỗ trợ trên trình duyệt này');
+            }
+        }
+    });
+</script>
+
+
+<!-- vid 2 -->
+<script>
+    // Setup function to initialize the player 2
+    const setupPlayer2 = () => {
+        const gifAd = document.querySelector('ins[data-revive-zoneid="42"]');
+        gifAd.style.visibility = 'hidden'; // Initially hide the ad
+        const playButton2 = document.getElementById('play-button-2');
+
+        playButton2.addEventListener('click', function() {
+            enableAdAndVideo2();
+        });
+    };
+
+    // Function to enable ad display and start video playback
+    const enableAdAndVideo2 = () => {
+        const gifAd = document.querySelector('ins[data-revive-zoneid="42"]');
+        const video2 = document.getElementById('video-2');
+        
+        gifAd.style.visibility = 'visible'; // Show the ad
+        video2.style.visibility = 'visible'; // Ensure video is visible
+
+        const videoUrl2 = document.getElementById('video-url-2').value;
+
+        // Using HLS if supported
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoUrl2);
+            hls.attachMedia(video2);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video2.play();
+            });
+        } else if (video2.canPlayType('application/vnd.apple.mpegurl')) {
+            // For Safari
+            video2.src = videoUrl2;
+            video2.addEventListener('loadedmetadata', function() {
+                video2.play();
+            });
+        } else {
+            console.error('HLS not supported on this browser');
+        }
+    };
+
+    // Call setup function when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', setupPlayer2);
+</script>
+
+<!-- vid 3-->
+<script> 
+    
+    // Setup function to initialize the player for Video 3
+    const setupPlayer3 = () => {
+        const gifAd = document.querySelector('ins[data-revive-zoneid="57"]');
+        gifAd.style.visibility = 'hidden'; // Initially hide the ad
+        const playButton3 = document.getElementById('play-button-3');
+
+        playButton3.addEventListener('click', function() {
+            enableAdAndVideo3();
+        });
+    };
+
+    // Function to enable ad display and start video playback
+    const enableAdAndVideo3 = () => {
+        const gifAd = document.querySelector('ins[data-revive-zoneid="57"]');
+        const video3 = document.getElementById('video-3');
+        
+        gifAd.style.visibility = 'visible'; // Show the ad
+        video3.style.visibility = 'visible'; // Ensure video is visible
+
+        const videoUrl3 = document.getElementById('video-url-3').value;
+
+        // Using HLS if supported
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoUrl3);
+            hls.attachMedia(video3);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video3.play();
+            });
+        } else if (video3.canPlayType('application/vnd.apple.mpegurl')) {
+            // For Safari
+            video3.src = videoUrl3;
+            video3.addEventListener('loadedmetadata', function() {
+                video3.play();
+            });
+        } else {
+            console.error('HLS not supported on this browser');
+        }
+    };
+
+    // Call setup function when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', setupPlayer3);
+</script>
+</body>
+</html>

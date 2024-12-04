@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player with Ads</title>
+    <script src="js/player_library.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        margin: 0;
+        height: 100vh;
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        background-color: #34495e;
+        padding: 10px 0;
+    }
+    nav button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    nav button:hover {
+        background-color: #2980b9;
+    }
+    nav .spacer {
+        flex-grow: 1; 
+    }
+
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    .box {
+        background-color: #c0392b;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 5px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    #vid {
+        flex: 1;
+        margin: 10px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .video-container {
+        position: relative;
+        width: 640px;
+        height: 360px;
+        margin-top: 20px;
+    }
+    video {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+    .video-url {
+        width: 400px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    .play-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+    .play-button:hover {
+        background-color: #0056b3;
+    }
+    .ad-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%; 
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .skip-button {
+        display: none;
+        position: absolute;
+        bottom: 20px; 
+        right: 20px; 
+        z-index: 999;
+        padding: 10px 15px;
+        background-color: rgb(64, 62, 62);
+        color: #fff;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .skip-button:hover {
+        background-color: #c82333;
+    }
+
+    .mute-button {
+        background-color: rgb(64, 62, 62);
+        position: absolute;
+        bottom: 20px; 
+        right: 100px; 
+        z-index: 999;
+        padding: 10px 15px;
+        background-color: rgb(64, 62, 62);
+        color: #fff;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+        width: 42px;
+        height: 40px;
+        display: none;
+    }
+
+    #mute-icon {
+        height: 20px;
+        width: 20px;
+        left: 10px;
+    }
+
+.pause-play-button {
+    display: none;
+    background-color: rgb(64, 62, 62);
+    position: absolute;
+    bottom: 20px; 
+    right: 570px; 
+    z-index: 999;
+    padding: 10px 15px;
+    background-color: rgb(64, 62, 62);
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 42px;
+    height: 40px;
+}
+
+#pause-play-icon {
+    height: 20px;
+    width: 20px;
+}
+
+    .ad-overlay-2 {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px; 
+        height: 150px; 
+        z-index: 10;
+    }
+
+    ins {
+        display: block;
+        width: 100%;
+        height: 100%;
+        margin-left: 141px;
+    }
+    .ad-overlay-3 {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px; 
+        height: 150px; 
+        z-index: 10;
+    }
+
+    ins {
+        display: block;
+        width: 100%;
+        height: 100%;
+        margin-left: 141px;
+    }
+    #links {
+        display: flex;
+        flex-direction: column;
+        height: 49vh;
+        width: 52vw;
+        margin-top: 80px;
+        padding: 50px;
+    }
+
+    .link-item {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 50px;
+    }
+
+    .link-item input {
+        width: 80%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .copy-button {
+        padding: 8px 12px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .copy-button:hover {
+        background-color: #218838;
+    }
+</style>
+<body>
+    <nav>
+        <button onclick="location.href='http://adweb.ami.vn/'">Banner</button>
+        <button onclick="location.href='http://csai.ami.vn/'">CSAI</button>
+        <button onclick="location.href='CSAIgifandpic.html'">CSAI with Pictures and Gifs</button>
+        <button onclick="location.href='https://ssai.ami.vn/'">SSAI</button>
+        <div class="spacer">
+    </nav>
+
+    <div class="container">
+        <!-- vid1 -->
+        <div id="vid">
+
+            <h1>HLS Video Player with Ads</h1>
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url" value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS .m3u8">
+                <button class="play-button" id="play-button">Play Video</button>
+            </div>
+            <div class="video-container">
+                <video id="video" data-value="61" controls></video>
+                <div class="ad-overlay" id="ad-overlay">Loading Ad...</div>
+                <button class="skip-button" id="skip-button">Skip Ad</button>
+                <button class="mute-button" id="mute-button">
+                    <img id="mute-icon" src="https://img.icons8.com/ios-filled/50/000000/mute.png" alt="Mute">
+                </button>
+                <button class="pause-play-button" id="pause-play-button">
+                    <img id="pause-play-icon" src="https://img.icons8.com/ios-filled/50/000000/play.png" alt="Play">
+                </button>
+            </div>
+        
+
+            <h1>HLS Video Player with Ads (Second Player)</h1>
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url-2" value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS .m3u8">
+                <button class="play-button" id="play-button-2">Play Video</button>
+            </div>
+            <div class="video-container">
+                <video id="video-2" data-value="61" controls></video>
+                <div class="ad-overlay" id="ad-overlay-2">Loading Ad...</div>
+                <button class="skip-button" id="skip-button-2">Skip Ad</button>
+                <button class="mute-button" id="mute-button-2">
+                    <img id="mute-icon-2" src="https://img.icons8.com/ios-filled/50/000000/mute.png" alt="Mute">
+                </button>
+                <button class="pause-play-button" id="pause-play-button-2">
+                    <img id="pause-play-icon-2" src="https://img.icons8.com/ios-filled/50/000000/play.png" alt="Play">
+                </button>
+            </div>
+
+            <h1>HLS Video Player with Ads at The End</h1>
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url-3" value="https://vz-cea98c59-23c.b-cdn.net/c309129c-27b6-4e43-8254-62a15c77c5ee/playlist.m3u8" placeholder="Enter HLS .m3u8 video URL">
+                <button class="play-button" id="play-button-3">Play Video</button>
+            </div>
+            <div class="video-container">
+                <video id="video-3" data-value="61" controls></video>
+                <div class="ad-overlay" id="ad-overlay-3">Loading Ad...</div>
+                <button class="skip-button" id="skip-button-3">Skip Ad</button>
+                <button class="mute-button" id="mute-button-3">
+                    <img id="mute-icon-3" src="https://img.icons8.com/ios-filled/50/000000/mute.png" alt="Mute">
+                </button>
+                <button class="pause-play-button" id="pause-play-button-3">
+                    <img id="pause-play-icon-3" src="https://img.icons8.com/ios-filled/50/000000/play.png" alt="Play">
+                </button>
+            </div>
+            
+
+            
+            <h1>HLS Video Player with Ads and Time Duration</h1>
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url-4" value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS .m3u8">
+                <button class="play-button" id="play-button-4">Play Video</button>
+            </div>
+            <div class="video-container">
+                <video id="video-4" data-value="61" controls></video>
+                <div class="ad-overlay" id="ad-overlay-4">Loading Ad...</div>
+                <button class="skip-button" id="skip-button-4">Skip Ad</button>
+                <button class="mute-button" id="mute-button-4">
+                    <img id="mute-icon-4" src="https://img.icons8.com/ios-filled/50/000000/mute.png" alt="Mute">
+                </button>
+                <button class="pause-play-button" id="pause-play-button-4">
+                    <img id="pause-play-icon-4" src="https://img.icons8.com/ios-filled/50/000000/play.png" alt="Play">
+                </button>
+            </div>
+        
+
+        </div>
+
+        <div id="links">
+            <h1>HLS links</h1>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/antv.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/antv.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/quochoi.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/quochoi.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/quocte.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/quocte.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://vz-cea98c59-23c.b-cdn.net/c309129c-27b6-4e43-8254-62a15c77c5ee/playlist.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://vz-cea98c59-23c.b-cdn.net/c309129c-27b6-4e43-8254-62a15c77c5ee/playlist.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8')">Copy</button>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+<!-- Copy Link -->
+<script>
+    function copyToClipboard(link) {
+        const tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = link;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        alert('Link đã được sao chép: ' + link);
+    }
+</script>
+<script>
+    document.getElementById('play-button').addEventListener('click', async function() {
+    initializeAdPlayer('video', 'video-url', 'ad-overlay', 'skip-button', 'mute-button', 'mute-icon', 'pause-play-button', 'pause-play-icon');
+});
+
+
+    // Element references that will be used in the external JS file
+        const video = document.getElementById('video');
+        const videoUrl = document.getElementById('video-url').value;
+        const zoneId = video ? video.getAttribute('data-value') : null;
+        const adOverlay = document.getElementById('ad-overlay');
+        const skipButton = document.getElementById('skip-button');
+        const muteButton = document.getElementById('mute-button');
+        const muteIcon = document.getElementById('mute-icon');
+        const pausePlayButton = document.getElementById('pause-play-button');
+        const pausePlayIcon = document.getElementById('pause-play-icon');
+
+        console.log(zoneId);
+
+     
+</script>
+
+
+<script>
+    document.getElementById('play-button-2').addEventListener('click', async function() {
+    initializeAdPlayer('video-2', 'video-url-2', 'ad-overlay-2', 'skip-button-2', 'mute-button-2', 'mute-icon-2', 'pause-play-button-2', 'pause-play-icon-2');
+});
+        // Element references for the second video player
+        const video2 = document.getElementById('video-2');
+        const videoUrl2 = document.getElementById('video-url-2').value;
+        const zoneId2 = video2 ? video2.getAttribute('data-value') : null;
+        const adOverlay2 = document.getElementById('ad-overlay-2');
+        const skipButton2 = document.getElementById('skip-button-2');
+        const muteButton2 = document.getElementById('mute-button-2');
+        const muteIcon2 = document.getElementById('mute-icon-2');
+        const pausePlayButton2 = document.getElementById('pause-play-button-2');
+        const pausePlayIcon2 = document.getElementById('pause-play-icon-2');
+
+        console.log(zoneId2);
+
+
+</script>
+
+<script>
+    document.getElementById('play-button-3').addEventListener('click', function() {
+        End('video-3', 'video-url-3', 'ad-overlay-3', 'skip-button-3', 'mute-button-3', 'mute-icon-3', 'pause-play-button-3', 'pause-play-icon-3');
+    });
+    // Element references that will be used in the external JS file
+        const video3 = document.getElementById('video-3');
+        const videoUrl3 = document.getElementById('video-url-3').value;
+        const zoneId3 = video ? video.getAttribute('data-value-3') : null;
+        const adOverlay3 = document.getElementById('ad-overlay-3');
+        const skipButton3 = document.getElementById('skip-button-3');
+        const muteButton3 = document.getElementById('mute-button-3');
+        const muteIcon3 = document.getElementById('mute-icon-3');
+        const pausePlayButton3 = document.getElementById('pause-play-button-3');
+        const pausePlayIcon3 = document.getElementById('pause-play-icon-3');
+
+        console.log(zoneId3);
+
+</script>
+
+
+<script>
+    document.getElementById('play-button-4').addEventListener('click', function() {
+        const delay = 10000; // Customize this delay as needed (e.g., 10000ms for 10 seconds)
+        Delay('video-4', 'video-url-4', 'ad-overlay-4', 'skip-button-4', 'mute-button-4', 'mute-icon-4', 'pause-play-button-4', 'pause-play-icon-4', delay);
+    });
+
+    // Element references that will be used in the external JS file
+        const video4 = document.getElementById('video-4');
+        const videoUrl4 = document.getElementById('video-url-4').value;
+        const zoneId4 = video ? video.getAttribute('data-value-4') : null;
+        const adOverlay4 = document.getElementById('ad-overlay-4');
+        const skipButton4 = document.getElementById('skip-button-4');
+        const muteButton4 = document.getElementById('mute-button-4');
+        const muteIcon4 = document.getElementById('mute-icon-4');
+        const pausePlayButton4 = document.getElementById('pause-play-button-4');
+        const pausePlayIcon4 = document.getElementById('pause-play-icon-4');
+
+        console.log(zoneId4);
+</script>
+<script src="js/VideoAdvertisement.js">
+</script>
+
+</body>
+</html>

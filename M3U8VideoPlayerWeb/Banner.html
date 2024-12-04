@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player with Ads</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background-color: #34495e;
+            padding: 10px 0;
+        }
+        nav button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #2980b9;
+        }
+        nav .spacer {
+            flex-grow: 1; 
+        }
+        .container {
+            width: 1191px; 
+            height: 800px; 
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-top: 200px;
+        }
+        .box {
+            background-color: #c0392b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        /* Kích thước của các hộp (div) */
+        .rectangle { width: 300px; height: 100px; }
+        .leader-board { width: 728px; height: 90px; margin-left: 118px; }
+        .full-banner { width: 468px; height: 60px; }
+        .half-banner { width: 234px; height: 60px; }
+        .pop-under { width: 720px; height: 300px; margin-top: -177px; }
+        .vertical-banner { width: 120px; height: 240px; }
+        .medium-rectangle { width: 300px; height: 250px; }
+        .button1 { width: 120px; height: 90px; }
+        .button2 { width: 120px; height: 60px; margin-top: 5px; } 
+        .vertical-rectangle { width: 240px; height: 400px; margin-left: 58px; }
+        .homepage-ad { width: 300px; height: 600px; margin-top: -280px; }
+        .wide-skyscraper { width: 160px; height: 600px; margin-top: -280px; }
+        .skyscraper { width: 120px; height: 600px; margin-top: -280px; }
+
+
+        .square-large-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+        .square-pop-up { width: 250px; height: 250px; margin-left: 5px; margin-top: -222px; }
+        .large-rectangle { width: 336px; height: 280px; margin-left: 5px; margin-top: 5px; }
+
+
+        .rect-square-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-top: 32px;
+        }
+        .rectangle-small { width: 180px; height: 150px; }
+        .square-button { width: 125px; height: 125px; margin-top: 5px; }
+
+        .button-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <button onclick="location.href='Banner.html'">Banner</button>
+        <button onclick="location.href='CSAI.html'">CSAI</button>
+        <button onclick="location.href='https://ssai.ami.vn/'">SSAI</button>
+        <div class="spacer">
+    </nav>
+
+
+    <div class="container">
+        
+        <!--  Rectangle -->
+        <div class="box rectangle">
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="34" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+
+        <!--  Leader Board -->
+        <div class="box leader-board">
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="24" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+
+        <!--  Full Banner và Half Banner -->
+        <div class="box full-banner">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="21" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+
+        <div class="box half-banner">
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="35" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+
+        <!--  Vertical Banner và Medium Rectangle -->
+        <div class="box vertical-banner">
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="39" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+
+        <div class="box medium-rectangle">
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="27" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+
+        <!--  Pop-Under -->
+        <div class="box pop-under">
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="33" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+
+        <!-- Button Wrapper chứa Button 1 và Button 2 -->
+        <div class="button-wrapper">
+            <div class="box button1">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="25" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+            </div>
+
+            <div class="box button2">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="32" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+            </div>
+        </div>
+
+        <!--  Vertical Rectangle, Home Page Ad, Wide Skyscraper và Skyscraper -->
+        <div class="box vertical-rectangle">
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="29" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+        </div>
+        <div class="box homepage-ad">
+
+        </div>
+
+        <div class="box wide-skyscraper"> 
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="31" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>                   
+        </div> 
+
+        <div class="box skyscraper">   
+            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+            <ins data-revive-zoneid="22" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+            <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>             
+        </div>
+
+        <!-- Square Pop-Up và Large Rectangle -->
+        <div class="square-large-wrapper">
+            <div class="box square-pop-up">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="30" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+            </div>
+
+
+            <div class="box large-rectangle">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="28" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+            </div>
+        </div>
+
+        <!-- Wrapper cho Rectangle và Square Button -->
+        <div class="rect-square-wrapper">
+            <div class="box rectangle-small">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="26" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+            </div>
+
+
+            <div class="box square-button">
+                <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                <ins data-revive-zoneid="38" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+            </div>
+        </div>
+
+
+    </div>
+

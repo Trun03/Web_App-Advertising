@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player with Ads</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background-color: #34495e;
+            padding: 10px 0;
+        }
+        nav button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #2980b9;
+        }
+        nav .spacer {
+            flex-grow: 1; 
+        }
+
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .box {
+            background-color: #c0392b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        #vid {
+            flex: 1;
+            margin: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 640px;
+            height: 360px;
+            margin-top: 20px;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .video-url {
+            width: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .play-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .play-button:hover {
+            background-color: #0056b3;
+        }
+
+        .play-button-2 {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .play-button-2:hover {
+            background-color: #0056b3;
+        }
+        .ad-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .skip-button {
+            display: none;
+            position: absolute;
+            bottom: 20px; 
+            right: 20px; 
+            z-index: 999;
+            padding: 10px 15px;
+            background-color: rgb(64, 62, 62);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .skip-button:hover {
+            background-color: #c82333;
+        }
+
+        .mute-button {
+            background-color: rgb(64, 62, 62);
+            position: absolute;
+            bottom: 20px; 
+            right: 100px; 
+            z-index: 999;
+            padding: 10px 15px;
+            background-color: rgb(64, 62, 62);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 42px;
+            height: 40px;
+            display: none;
+        }
+
+        #mute-icon {
+            height: 20px;
+            width: 20px;
+            left: 10px;
+        }
+
+    .pause-play-button {
+        display: none;
+        background-color: rgb(64, 62, 62);
+        position: absolute;
+        bottom: 20px; 
+        right: 570px; 
+        z-index: 999;
+        padding: 10px 15px;
+        background-color: rgb(64, 62, 62);
+        color: #fff;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+        width: 42px;
+        height: 40px;
+    }
+
+    #pause-play-icon {
+        height: 20px;
+        width: 20px;
+    }
+
+
+        ins {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin-left: 141px;
+        }
+        .ad-overlay-3 {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px; 
+            height: 150px; 
+            z-index: 10;
+        }
+        .ad-overlay-4 {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px; 
+            height: 150px; 
+            z-index: 10;
+        }
+
+
+        ins {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin-left: 141px;
+        }
+        #links {
+            display: flex;
+            flex-direction: column;
+            height: 49vh;
+            width: 52vw;
+            margin-top: 80px;
+            padding: 50px;
+        }
+
+        .link-item {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 50px;
+        }
+
+        .link-item input {
+            width: 80%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .copy-button {
+            padding: 8px 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <button onclick="location.href='http://adweb.ami.vn/'">Banner</button>
+        <button onclick="location.href='http://csai.ami.vn/'">CSAI</button>     
+        <button onclick="location.href='CSAIgifandpic.html'">CSAI with Pictures and Gifs</button>
+        <button onclick="location.href='https://ssai.ami.vn/'">SSAI</button>
+   
+        <div class="spacer">
+    </nav>
+
+    <div class="container">
+        <!-- vid1 -->
+        <div id="vid">
+
+
+            <h1>Ad with Pics and Gifs</h1>
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url-3" value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS tại đây">
+                <button class="play-button" id="play-button-3">Play Ad 3</button>
+            </div>
+            <div class="video-container">
+                <video id="video-3" controls></video>
+                <div class="ad-overlay-3" style="visibility: hidden;">
+                    <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                    <ins data-revive-zoneid="42" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                    <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+                </div>
+            </div>
+
+            <h1>Ad with Pics and Gifs that Containing Time Duration </h1>
+            <!-- Video Player 4 -->
+            <div class="controls">
+                <input type="text" class="video-url" id="video-url-4" value="https://api-ad.ami.vn/live/antv.m3u8" placeholder="Nhập URL video HLS tại đây">
+                <button class="play-button" id="play-button-4">Play Ad 4</button>
+            </div>
+            <div class="video-container">
+                <video id="video-4" controls></video>
+                <div class="ad-overlay-4" style="visibility: hidden;">
+                    <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v5.5.2 -->
+                    <ins data-revive-zoneid="57" data-revive-id="4692f7630e76716914e394d41f4b5842"></ins>
+                    <script async src="//adserver.ami.vn/www/delivery/asyncjs.php"></script>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="links">
+            <h1>HLS links</h1>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/antv.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/antv.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/quochoi.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/quochoi.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://api-ad.ami.vn/live/quocte.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://api-ad.ami.vn/live/quocte.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://vz-cea98c59-23c.b-cdn.net/c309129c-27b6-4e43-8254-62a15c77c5ee/playlist.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://vz-cea98c59-23c.b-cdn.net/c309129c-27b6-4e43-8254-62a15c77c5ee/playlist.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8')">Copy</button>
+            </div>
+            <div class="link-item">
+                <input type="text" value="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" readonly>
+                <button class="copy-button" onclick="copyToClipboard('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8')">Copy</button>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+<!-- Copy Link -->
+<script>
+    function copyToClipboard(link) {
+        const tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = link;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        alert('Link đã được sao chép: ' + link);
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const playButton3 = document.getElementById('play-button-3');
+        playButton3.addEventListener('click', function() {
+            enableAdAndVideo('video-3', 'video-url-3', 'ad-overlay-3');
+        });
+
+        const playButton4 = document.getElementById('play-button-4');
+        playButton4.addEventListener('click', function() {
+            Delay('video-4', 'video-url-4', 'ad-overlay-4');
+        });
+    });
+</script>
+
+<script>    
+    const hideAdOverlay = (adOverlay) => {
+        setTimeout(() => {
+            adOverlay.style.visibility = 'hidden';
+        }, 9000);
+    };
+</script>
+
+
+<script src="js/Pic_and_GifAdvertisement.js"></script>
+</body>
+</html>
